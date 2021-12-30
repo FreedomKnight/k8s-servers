@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fah
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: fah
+  template:
+    metadata:
+      labels:
+        app: fah
+    spec:
+      volumes:
+        - name: fah-config-volume
+          configMap:
+            name: fah.xml
+      containers:
+        - image: linuxserver/foldingathome:latest
+          name: fah-client
+          volumeMounts:
+          - name: fah-config-volume
+            mountPath: /config/config.xml
+            subPath: config.xml
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: fah.xml
+data:
+  config.xml: |
+    <config>
+      <gpu v='false'/>
+      <power v='FULL'/>
+      <team v='236113'/>
+      <user v='fk-k8s'/>
+
+      <slot id='0' type='CPU'/>
+    </config>
