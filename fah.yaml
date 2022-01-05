@@ -4,7 +4,7 @@ metadata:
   name: fah
 spec:
   serviceName: fah-service
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: fah
