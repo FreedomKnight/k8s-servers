@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: workspace-statefulset
+spec:
+  serviceName: workspace
+  selector:
+    matchLabels:
+      app: workspace
+  template:
+    metadata:
+      labels:
+        app: workspace
+    spec:
+      containers:
+        - image: freedomknight/workspace:latest
+          name: workspace
+          command: ["sleep"]
+          args: [ "infinity"]
+

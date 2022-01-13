@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  labels:
+    app: api
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api 
+    spec:
+      volumes:
+        - name: app-directory
+          emptyDir: {}
+        - name: nginx-config-volume
+          configMap:
+            name: api-nginx.conf
+
+      containers:
+        - image: registry.digitalocean.com/freedomknight/api
+          name: api-codebase
+          resources:
+            limits:
+              cpu: 1
+              memory: 200Mi
+            requests:
+              memory: 25Mi
+              cpu: 0.1
+          volumeMounts:
+          - name: app-directory
+            mountPath: /var/www/html/
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "cp -r /app/ /var/www/html/ && chown -R www-data:www-data  /var/www/html/app"]
+
+        - image: nginx:1.19.10
+          name: api-nginx
+          volumeMounts:
+          - name: app-directory
+            mountPath: /var/www/html/
+          - name: nginx-config-volume
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+          ports:
+            - containerPort: 80

@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migration
+spec:
+  backoffLimit: 1
+  activeDeadlineSeconds: 100
+  ttlSecondsAfterFinished: 2592000 
+  template:
+    spec:
+      containers:
+      - name: api-migration
+        image: gcr.io/first-campaign-205803/prod-project-impossible-api:dcfcc5e11fb2a8f6c1a02a195505c4293bb82a63
+        command: ["php",  "artisan", "migrate"]
+      restartPolicy: Never
